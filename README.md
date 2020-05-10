@@ -1,13 +1,13 @@
 Example configuring JWT authorizer for Api Gateway HTTP endpoint with serverless
 ---
-###Description:
+### Description:
 Simple example of configuring authorizer for Api Gateway HTTP endpoint. Can be used as a note.   
 
-###Required:
+### Required:
 - [Created AWS Account](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start)
 - [Configured Serverless Framework](https://serverless.com/framework/docs/providers/aws/cli-reference/config-credentials/)
 
-###How to use:   
+### How to use:   
 1) Clone or download   
 2) Run `npm i`
 3) Run `pip install -r requirements.txt`
