@@ -1,0 +1,26 @@
+{
+  "name": "python-aws-cognito-example",
+  "version": "1.0.0",
+  "description": "npm init sls plugin install -n serverless-python-requirements --stage=artem npm install --save-dev serverless-plugin-warmup",
+  "main": "index.js",
+  "dependencies": {
+    "serverless": "^1.70.0",
+    "serverless-plugin-warmup": "^4.9.0",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-python-requirements": "^5.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SavelevArtemD/python-AWS-cognito-exapmple.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SavelevArtemD/python-AWS-cognito-exapmple/issues"
+  },
+  "homepage": "https://github.com/SavelevArtemD/python-AWS-cognito-exapmple#readme"
+}

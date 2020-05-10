@@ -1,0 +1,131 @@
+service: cognito-example
+
+plugins:
+  - serverless-python-requirements
+  - serverless-plugin-warmup
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${opt:stage}
+  role: ExecutionRole
+  endpointType: REGIONAL
+  timeout: 28
+  memorySize: 256
+  environment:
+    STAGE: ${self:provider.stage}
+  logs:
+    httpApi: true
+  httpApi:
+    cors: true
+    authorizers:
+      simpleAuthorizer:
+        identitySource: $request.header.Authorization
+        issuerUrl: "https://cognito-idp.#{AWS::Region}.amazonaws.com/#{CognitoUserPool}"
+        audience:
+          - "#{CognitoUserPoolClient}"
+
+
+package:
+  exclude:
+    - .git/**
+    - .cache/**
+    - venv/**
+    - node_modules/**
+    - build/**
+    - dist/**
+    - sutaxi_serverless.egg-info/**
+    - .cloudformation/**
+    - .eggs/**
+
+functions:
+  ping:
+    name: ${self:provider.stage}-test
+    handler: test.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /test
+          authorizer:
+            name: simpleAuthorizer
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:service}-${self:provider.stage}-user
+        UsernameAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: False
+            RequireNumbers: True
+            RequireSymbols: False
+            RequireUppercase: True
+        Schema:
+          - Name: email
+            Required: false
+            DeveloperOnlyAttribute: false
+            Mutable: true
+            AttributeDataType: String
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: cognito-example-client
+        GenerateSecret: False
+        UserPoolId: "#{CognitoUserPool}"
+
+    ExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        RoleName: ${self:service}-${self:provider.stage}-execution-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole
+          - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        Policies:
+          - PolicyName: execution-access
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:BatchGetItem
+                    - dynamodb:BatchWriteItem
+                    - dynamodb:DeleteItem
+                    - dynamodb:DescribeStream
+                    - dynamodb:DescribeTable
+                    - dynamodb:GetItem
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:ListStreams
+                    - dynamodb:PutItem
+                    - dynamodb:Query
+                    - dynamodb:Scan
+                    - dynamodb:UpdateItem
+                  Resource: arn:aws:dynamodb:*:*:table/${self:provider.stage}*
+                - Effect: Allow
+                  Action:
+                    - logs:DescribeLogGroups
+                    - logs:DescribeLogStreams
+                    - logs:GetLogEvents
+                    - logs:FilterLogEvents
+                  Resource:
+                    - Fn::Join:
+                        - ':'
+                        - - arn:aws:lambda
+                          - Ref: AWS::Region
+                          - Ref: AWS::AccountId
+                          - function:${self:service}-${opt:stage, self:provider.stage}-*
