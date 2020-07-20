@@ -4,7 +4,7 @@
   "description": "npm init sls plugin install -n serverless-python-requirements --stage=artem npm install --save-dev serverless-plugin-warmup",
   "main": "index.js",
   "dependencies": {
-    "serverless": "^1.70.0",
+    "serverless": "^1.75.1",
     "serverless-plugin-warmup": "^4.9.0",
     "serverless-pseudo-parameters": "^2.5.0",
     "serverless-python-requirements": "^5.1.0"
